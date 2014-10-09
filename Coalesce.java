@@ -3,55 +3,53 @@ import java.util.Map;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.text.SimpleDateFormat;
-import java.util.UUID;
+import java.util.ArrayList;
 
 public class Coalesce {
-
 	public static void main(String[] args) {
 		CoalesceCalendar cal = new CoalesceCalendar();
 		int[] startTime = {2013,10,9,9,27};
-		Event eve = new Event("Algorithms and Complexity", 3.0, startTime);
-
-		cal.add(eve);
-
-		System.out.println(cal.getEvent(eve.getId()));
+		cal.addEvent(new Event("Algorithms and Complexity", 3.0));
+		int[] onDays = {0,1,2,3,4,5,6};
+		int[][] onHm = {{12,0}};
+		cal.addEventRule(new EventRule("Lunch", onDays, onHm));
 	}
 }
 
 class CoalesceCalendar {
-	Map<UUID,Event> scheduledEvents = new HashMap<UUID,Event>();
+	Map<String,Event> scheduledEvents = new HashMap<String,Event>();
+	ArrayList<EventRule> eventRules = new ArrayList<EventRule>();
 
-	public boolean add(Event e) {
-		scheduledEvents.put(e.getId(), e);
-		return true; 
+	public void addEvent(Event e) {
+		scheduledEvents.put(e.getID(), e);
 	}
 
-	public boolean remove(Event e) {
-		scheduledEvents.remove(e.getId());
-		return true;
+	public void removeEvent(Event e) {
+		scheduledEvents.remove(e.getID());
 	}
 
-	public Event getEvent(UUID id) {
-		return scheduledEvents.get(id);
+	public Event getEvent(String title) {
+		return scheduledEvents.get(title);
+	}
+
+	public void addEventRule(EventRule er) {
+		eventRules.add(er);
 	}
 }
 
 class Event {
-	private UUID id;
 	private double duration;
 	private boolean mutable;
 	private Calendar timeBlock;
 	private String title;
 
-	Event(String et, double dur, int...dt) {
-		id = UUID.randomUUID();
+	public Event(String et, double dur) {
 		duration = dur;
 		title = et;
-		timeBlock = new GregorianCalendar(dt[0], dt[1], dt[2], dt[3], dt[4]);
 	}
 
-	UUID getId() {
-		return id;
+	String getID() {
+		return title;
 	}
 
 	public String toString() {
@@ -61,10 +59,45 @@ class Event {
 	}
 }
 
+class HourMinute {
+	public final int hour;
+	public final int minute;
+
+	public HourMinute(final int h, final int m) {
+		this.hour = h;
+		this.minute = m;
+	}
+
+	public boolean equals (HourMinute hm) {
+		if (hour == hm.hour && minute == hm.minute) {
+			return true;
+		}
+		else return false;
+	}
+
+	public String toString() {
+		return hour + ":" + minute;
+	}
+}
+
+class EventRule {
+	private ArrayList<Integer> days = new ArrayList<Integer>();
+	private ArrayList<HourMinute> times = new ArrayList<HourMinute>();
+	private String name;
+
+	public EventRule(String eventRuleName, int[] onDays, int[][] onHm) {
+		name = eventRuleName;
+		for ( int i = 0; i < onDays.length; i++ ) {
+			days.add(onDays[i]);
+		}
+		for ( int j = 0; j < onHm.length; j++ ) {
+			times.add(new HourMinute(onHm[j][0],onHm[j][1]));
+		}
+	}
+}
+
 /*
 class Category {}
-
-class Fixed extends Event {}
 
 class Flexible extends Event {}
 
