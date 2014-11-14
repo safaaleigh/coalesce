@@ -1,19 +1,22 @@
 import java.util.Calendar;
 import java.util.ArrayList;
 import java.util.Map;
+import java.text.SimpleDateFormat;
 
 public class EventRule {
 	protected ArrayList<Integer> days = new ArrayList<Integer>();
 	protected ArrayList<HourMinute> times = new ArrayList<HourMinute>();
 	protected double duration;
 	protected String name;
+	protected boolean movable;
 
 	public EventRule() {
 		duration = 0;
 		name = null;
+		movable = false;
 	}
 
-	public EventRule(final String eventRuleName, final int[] onDays, final int[][] onTimes, final double dur) {
+	public EventRule(final String eventRuleName, final int[] onDays, final int[][] onTimes, final double dur, final boolean mov) {
 		name = eventRuleName;
 		for ( int i = 0; i < onDays.length; i++ ) {
 			days.add(onDays[i]);
@@ -22,17 +25,18 @@ public class EventRule {
 			times.add(new HourMinute(onTimes[j][0],onTimes[j][1]));
 		}
 		duration = dur;
+		movable = false;
 	}
 
 	public void applyRule(Map<String,Event> events, final Calendar week) {
 		int i = 0;
 		for (Integer d : days) {
 			for (HourMinute hm : times) {
-				Calendar ecal = week;
-				ecal.set(Calendar.DAY_OF_WEEK, d+1);
+				Calendar ecal = (Calendar) week.clone();
+				ecal.set(Calendar.DAY_OF_WEEK, (d.intValue() + 1) );
 				ecal.set(Calendar.HOUR_OF_DAY, hm.hour);
 				ecal.set(Calendar.MINUTE, hm.minute);
-				events.put(name + "" + i, new Event(name, ecal, duration));
+				events.put(name + "" + i, new Event(name, ecal, duration, movable));
 				i++;
 			}
 		}

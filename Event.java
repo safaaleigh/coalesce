@@ -13,14 +13,15 @@ public class Event {
 		title = null;
 	}
 
-	public Event(final String et, final double dur) {
-		movable = false;
+	public Event(final String et, final double dur, final boolean mov) {
+		movable = mov;
 		startTimeAndDay = Calendar.getInstance();
 		duration = dur;
 		title = et;
 	}
 
-	public Event(final String et, final Calendar st, final double dur) {
+	public Event(final String et, final Calendar st, final double dur, final boolean mov) {
+		movable = mov;
 		title = et;
 		startTimeAndDay = st;
 		duration = dur;
@@ -36,6 +37,10 @@ public class Event {
 
 	public Calendar getStart() {
 		return startTimeAndDay;
+	}
+
+	public boolean isMovable() {
+		return movable;
 	}
 
 	public String toString() {
